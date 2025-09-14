@@ -7,4 +7,9 @@
 body {
     font: system-ui;
     font-size: 1.125rem;
+    overflow: hidden;
+}
+
+canvas {
+    background-color: black;
 }

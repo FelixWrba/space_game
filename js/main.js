@@ -12,7 +12,7 @@ window.addEventListener('resize', () => resizeGame(window.innerWidth, window.inn
 
 resizeGame(window.innerWidth, window.innerHeight);
 
-const player = new Player(50, 50);
+const player = new Player(new Vector(50, 50));
 
 function resizeGame(width, height) {
     canvas.width = width;
@@ -37,7 +37,7 @@ function update(dt) {
     // draw
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    player.draw();
+    player.draw(now);
 
     requestAnimationFrame(draw);
 })();

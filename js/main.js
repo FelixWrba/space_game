@@ -12,7 +12,8 @@ window.addEventListener('resize', () => resizeGame(window.innerWidth, window.inn
 
 resizeGame(window.innerWidth, window.innerHeight);
 
-const player = new Player(new Vector(50, 50));
+const player = new Player(new Vector(400, 200), new Vector(4, 0));
+const earth = new Planet(new Vector(400, 400), 100, 5000, '#1e90ff');
 
 function resizeGame(width, height) {
     canvas.width = width;
@@ -34,9 +35,10 @@ function update(dt) {
         accumulator -= fixedDt;
     }
 
-    // draw
+    // clear screen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    earth.draw();
     player.draw(now);
 
     requestAnimationFrame(draw);

@@ -1,12 +1,14 @@
 class Player {
-    velocity = new Vector();
     rotation = 0;
 
-    constructor(pos) {
+    constructor(pos, startingVelocity = new Vector()) {
         this.pos = new Vector(pos.x, pos.y);
+        this.velocity = startingVelocity;
     }
 
     draw(startTime) {
+        this.drawOrbitalLine();
+
         ctx.save();
         ctx.translate(this.pos.x, this.pos.y);
         ctx.rotate(this.rotation);
@@ -30,6 +32,11 @@ class Player {
         }
 
         ctx.restore();
+
+        // speed overlay
+        ctx.font = '12px monospace'
+        ctx.fillStyle = 'white';
+        ctx.fillText(`Speed: ${this.velocity.mag().toFixed(1)}`, 20, 20);
     }
 
     update(dt) {
@@ -45,7 +52,10 @@ class Player {
             this.rotation += 0.1;
         }
 
-        let nextPos = this.pos.add(this.velocity);
+        // add gravity to velocity
+        this.velocity = this.velocity.add(this.getGravityAcceleration(this.pos, earth.pos));
+
+        let nextPos = this.getNextPos();
 
         // detect wall collision
         if (nextPos.x > canvas.width || nextPos.x < 0 || nextPos.y > canvas.height || nextPos.y < 0) {
@@ -53,6 +63,50 @@ class Player {
             nextPos = this.pos;
         }
 
+        // detect earth collision
+        if (nextPos.sub(earth.pos).mag() < earth.radius) {
+            this.velocity = new Vector();
+            nextPos = this.pos;
+        }
+
         this.pos = nextPos;
+    }
+
+    drawOrbitalLine() {
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(this.pos.x, this.pos.y);
+        for (let i = 1; i < 200; i++) {
+            let nextPos = this.getNextPos(i);
+            ctx.lineTo(nextPos.x, nextPos.y);
+        }
+        ctx.stroke();
+    }
+
+    getGravityAcceleration(playerPos, earthPos) {
+        let relativePos = playerPos.sub(earthPos);
+
+        return relativePos.normalize().mul(-0.1);
+    }
+
+    getNextPos(frames = 1) {
+        if (frames === 1) {
+            return this.pos.add(this.velocity);
+        }
+
+        let nextPos = this.pos;
+        let nextVel = this.velocity;
+
+        for (let i = 1; i <= frames; i++) {
+            let currentPos = nextPos;
+            let gravity = this.getGravityAcceleration(currentPos, earth.pos)
+            let currentVel = nextVel.add(gravity);
+
+            nextPos = currentPos.add(currentVel);
+            nextVel = currentVel;
+        }
+
+        return nextPos;
     }
 }

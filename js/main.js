@@ -12,8 +12,8 @@ window.addEventListener('resize', () => resizeGame(window.innerWidth, window.inn
 
 resizeGame(window.innerWidth, window.innerHeight);
 
-const player = new Player(new Vector(400, 200), new Vector(4, 0));
-const earth = new Planet(new Vector(400, 400), 100, 5000, '#1e90ff');
+const player = new Player(new Vector(0, 0));
+const earth = new Planet(new Vector(400, 400), 500, 5000, '#1e90ff');
 
 function resizeGame(width, height) {
     canvas.width = width;
@@ -38,8 +38,11 @@ function update(dt) {
     // clear screen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    earth.draw();
-    player.draw(now);
+    // camera offset
+    const offset = player.pos.sub(new Vector(canvas.width / 2, canvas.height / 2));
+
+    earth.draw(offset);
+    player.draw(now, offset);
 
     requestAnimationFrame(draw);
 })();

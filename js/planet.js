@@ -6,10 +6,14 @@ class Planet {
         this.color = color;
     }
 
-    draw() {
+    draw(cameraOffset) {
+        ctx.shadowColor = this.color;
+        ctx.shadowColor = ctx.shadowColor + 'ee';
+        ctx.shadowBlur = '120';
+
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+        ctx.arc(this.pos.x - cameraOffset.x, this.pos.y - cameraOffset.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
     }
 }

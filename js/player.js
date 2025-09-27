@@ -6,11 +6,11 @@ class Player {
         this.velocity = startingVelocity;
     }
 
-    draw(startTime) {
-        this.drawOrbitalLine();
+    draw(startTime, cameraOffset) {
+        this.drawOrbitalLine(cameraOffset);
 
         ctx.save();
-        ctx.translate(this.pos.x, this.pos.y);
+        ctx.translate(this.pos.x - cameraOffset.x, this.pos.y - cameraOffset.y);
         ctx.rotate(this.rotation);
 
         // draw white triangle for rocket
@@ -41,7 +41,7 @@ class Player {
 
     update(dt) {
         if (keys['w']) {
-            let thrust = new Vector(Math.cos(this.rotation), Math.sin(this.rotation)).mul(0.5);
+            let thrust = new Vector(Math.cos(this.rotation), Math.sin(this.rotation)).mul(0.2);
             this.velocity = this.velocity.add(thrust);
         }
 
@@ -58,10 +58,10 @@ class Player {
         let nextPos = this.getNextPos();
 
         // detect wall collision
-        if (nextPos.x > canvas.width || nextPos.x < 0 || nextPos.y > canvas.height || nextPos.y < 0) {
-            this.velocity = new Vector();
-            nextPos = this.pos;
-        }
+        // if (nextPos.x > canvas.width || nextPos.x < 0 || nextPos.y > canvas.height || nextPos.y < 0) {
+        //     this.velocity = new Vector();
+        //     nextPos = this.pos;
+        // }
 
         // detect earth collision
         if (nextPos.sub(earth.pos).mag() < earth.radius) {
@@ -72,14 +72,14 @@ class Player {
         this.pos = nextPos;
     }
 
-    drawOrbitalLine() {
+    drawOrbitalLine(cameraOffset) {
         ctx.strokeStyle = '#333';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(this.pos.x, this.pos.y);
+        ctx.moveTo(this.pos.x - cameraOffset.x, this.pos.y - cameraOffset.y);
         for (let i = 1; i < 200; i++) {
             let nextPos = this.getNextPos(i);
-            ctx.lineTo(nextPos.x, nextPos.y);
+            ctx.lineTo(nextPos.x - cameraOffset.x, nextPos.y - cameraOffset.y);
         }
         ctx.stroke();
     }
